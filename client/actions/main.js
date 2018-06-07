@@ -13,6 +13,7 @@ import {
     getItemType,
     gettext,
     eventUtils,
+    planningUtils,
     shouldLockItemForEdit,
     shouldUnLockItem,
     getItemTypeString,
@@ -22,7 +23,6 @@ import {
     isItemKilled,
     getItemId,
     isTemporaryId,
-    generateTempId,
     getAutosaveItem,
 } from '../utils';
 import eventsPlanningUi from './eventsPlanning/ui';
@@ -32,13 +32,20 @@ import * as selectors from '../selectors';
 import {validateItem} from '../validators';
 
 const createNew = (itemType) => (
-    (dispatch) => {
-        const newItem = {
-            _id: generateTempId(),
-            type: itemType,
-        };
+    (dispatch, getState) => {
+        let newItem;
 
-        dispatch(autosave.save(newItem, 'create', false));
+        if (itemType === ITEM_TYPE.EVENT) {
+            newItem = eventUtils.defaultEventValues(
+                selectors.vocabs.eventOccurStatuses(getState()),
+                selectors.events.defaultCalendarValue(getState())
+            );
+        } else if (itemType === ITEM_TYPE.PLANNING) {
+            newItem = planningUtils.defaultPlanningValues(
+                selectors.planning.currentAgenda(getState())
+            );
+        }
+
         return dispatch(self.lockAndEdit(newItem));
     }
 );
@@ -60,20 +67,13 @@ const lockAndEdit = (item, modal = false) => (
             return Promise.resolve(item);
         }
 
-        dispatch(setLoadingEditItem(modal));
-        if (!modal) {
-            dispatch(self.openEditor(item));
-        } else {
-            // Open the modal to show the editor
-            dispatch(closeEditorAndOpenModal(item));
-        }
-
-
         // If the item being edited is currently opened in the Preview panel
         // then close the preview panel
         if (selectors.main.previewId(getState()) === item._id) {
             dispatch(self.closePreview());
         }
+
+        dispatch(setLoadingEditItem(modal));
 
         // If it is an existing item and the item is not locked
         // then lock the item, otherwise return the existing item
@@ -82,6 +82,13 @@ const lockAndEdit = (item, modal = false) => (
             Promise.resolve(item);
 
         return promise.then((lockedItem) => {
+            if (!modal) {
+                dispatch(self.openEditor(item));
+            } else {
+                // Open the modal to show the editor
+                dispatch(closeEditorAndOpenModal(item));
+            }
+
             dispatch(unsetLoadingEditItem(modal));
 
             return Promise.resolve(lockedItem);
@@ -553,7 +560,7 @@ const filter = (ftype = null) => (
         }
 
         if (get(params, 'advancedSearch.dates')) {
-            params.advancedSearch = eventUtils.convertToMoment(get(params, 'advancedSearch'));
+            params.advancedSearch = eventUtils.modifyForClient(get(params, 'advancedSearch'));
         }
 
         // Update the url (deep linking)
@@ -843,7 +850,7 @@ const fetchById = (itemId, itemType) => (
             }
         }
 
-        return Promise.resolve({});
+        return Promise.resolve(null);
     }
 );
 

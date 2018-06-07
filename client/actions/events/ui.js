@@ -1,4 +1,4 @@
-import {showModal, main, locks} from '../index';
+import {showModal, main, locks, autosave} from '../index';
 import {EVENTS, MODALS, SPIKED_STATE, MAIN, ITEM_TYPE} from '../../constants';
 import eventsApi from './api';
 import planningApi from '../planning/api';
@@ -559,8 +559,8 @@ const createEventFromPlanning = (plan) => (
         };
 
         return dispatch(planningApi.lock(plan, 'add_as_event'))
-            .then(() =>
-                dispatch(main.lockAndEdit({
+            .then(() => {
+                const newItem = {
                     type: ITEM_TYPE.EVENT,
                     dates: {
                         start: moment(plan.planning_date).clone(),
@@ -580,8 +580,11 @@ const createEventFromPlanning = (plan) => (
                     occur_status: unplannedStatus,
                     _planning_item: plan._id,
                     _id: generateTempId(),
-                }))
-            );
+                };
+
+                return dispatch(autosave.save(newItem))
+                    .then(() => dispatch(main.lockAndEdit(newItem)));
+            });
     }
 );
 
