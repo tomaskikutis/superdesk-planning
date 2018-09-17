@@ -189,3 +189,23 @@ AMAZON_S3_USE_HTTPS = env('AMAZON_S3_USE_HTTPS', False)
 is_testing = os.environ.get('SUPERDESK_TESTING', '').lower() == 'true'
 ELASTICSEARCH_FORCE_REFRESH = is_testing
 ELASTICSEARCH_AUTO_AGGREGATIONS = False
+
+DEFAULT_LANGUAGE = 'en'
+
+LANGUAGES = [
+    {'language': 'en', 'label': 'English', 'source': True, 'destination': True},
+    {'language': 'fr', 'label': 'French', 'source': True, 'destination': True},
+    {'language': 'de', 'label': 'German', 'source': True, 'destination': True},
+    {'language': 'es', 'label': 'Spanish', 'source': True, 'destination': True},
+    {'language': 'it', 'label': 'Italian', 'source': True, 'destination': True},
+    {'language': 'sv', 'label': 'Swedish', 'source': True, 'destination': True},
+    {'language': 'nb', 'label': 'Norwegian', 'source': True, 'destination': True},
+    {'language': 'pl', 'label': 'Polish', 'source': True, 'destination': True},
+    {'language': 'zh-cn', 'label': 'Simplified Chinese', 'source': True, 'destination': True},
+    {'language': 'zh-hk', 'label': 'Traditional Chinese (HK)', 'source': True, 'destination': True},
+    {'language': 'ja', 'label': 'Japanese', 'source': True, 'destination': True},
+    {'language': 'ko', 'label': 'Korean', 'source': True, 'destination': True},
+    {'language': 'zh-tw', 'label': 'Traditional Chinese (TW)', 'source': True, 'destination': True},
+    {'language': 'nl', 'label': 'Dutch', 'source': True, 'destination': True}
+]
+
