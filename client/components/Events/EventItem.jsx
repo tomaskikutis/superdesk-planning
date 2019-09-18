@@ -196,8 +196,9 @@ export class EventItemComponent extends React.Component {
                         )}
                         {secondaryFields.includes('calendars') && renderFields('calendars', item, {
                             calendars: calendars,
-                            grow: !get(item, 'location') && !showRelatedPlanningLink,
                         }) }
+
+                        {secondaryFields.includes('files') && renderFields('files', item)}
 
 
                         {(showRelatedPlanningLink) &&
@@ -212,7 +213,6 @@ export class EventItemComponent extends React.Component {
                         }
 
                         {secondaryFields.includes('location') && renderFields('location', item)}
-                        {secondaryFields.includes('files') && renderFields('files', item)}
 
 
                     </Row>
