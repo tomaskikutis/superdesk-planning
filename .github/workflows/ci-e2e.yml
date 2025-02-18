@@ -15,7 +15,7 @@ jobs:
       INSTALL_NODE_MODULES: true
       RUN_SERVICES: true
       E2E: true
-      TZ: Australia/Sydney
+      TZ: Europe/Prague
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
